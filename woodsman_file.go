@@ -1,4 +1,4 @@
-// Go support for leveled logs, analogous to https://code.google.com/p/google-glog/
+// Go support for leveled logs, analogous to https://code.google.com/p/google-woodsman/
 //
 // Copyright 2013 Google Inc. All Rights Reserved.
 //
@@ -16,7 +16,7 @@
 
 // File I/O for logs.
 
-package glog
+package woodsman
 
 import (
 	"errors"
