@@ -51,7 +51,7 @@ type loggingT struct {
 func initFlags() {
     flag.BoolVar(&logging.toStderr, "logtostderr", false, "log to standard error")
     flag.BoolVar(&logging.toFile, "logtofile", false, "log to files")
-    flag.BoolVar(&logging.toStderr, "logtosyslog", false, "log to syslog")
+    flag.BoolVar(&logging.toSyslog, "logtosyslog", false, "log to syslog")
     flag.Var(&logging.verbosity, "v", "log level for V logs")
     flag.Var(&logging.stderrThreshold, "stderrthreshold", "logs at or above this threshold go to stderr")
     flag.Var(&logging.vmodule, "vmodule", "comma-separated list of pattern=N settings for file-filtered logging")

@@ -65,6 +65,8 @@ import (
     "strings"
     "sync/atomic"
     "time"
+
+    "github.com/blackjack/syslog"
 )
 
 // severity identifies the sort of log: info, warning etc. It also implements
@@ -578,35 +580,49 @@ func (l *loggingT) output(s severity, buf *buffer) {
         }
     }
     data := buf.Bytes()
+
     if l.toStderr {
         os.Stderr.Write(data)
     }
 
-    if l.toFile {
-        if s >= l.stderrThreshold.get() {
-            os.Stderr.Write(data)
+    if l.toSyslog {
+        switch s {
+            case fatalLog:
+                syslog.Emerg(string(data))
+            case errorLog:
+                syslog.Err(string(data))
+            case warningLog:
+                syslog.Warning(string(data))
+            case infoLog:
+                syslog.Info(string(data))
         }
+    }
+
+    if l.toFile {
+        // JTODO: CONVERT TO JUST MIN THRESHOLD, NOT STDERR THRESHOLD
+        // if s >= l.stderrThreshold.get() {
+        //     os.Stderr.Write(data)
+        // }
+
         if l.file[s] == nil {
             if err := l.createFiles(s); err != nil {
                 os.Stderr.Write(data) // Make sure the message appears somewhere.
                 l.exit(err)
             }
         }
+
         switch s {
-        case fatalLog:
-            l.file[fatalLog].Write(data)
-            fallthrough
-        case errorLog:
-            l.file[errorLog].Write(data)
-            fallthrough
-        case warningLog:
-            l.file[warningLog].Write(data)
-            fallthrough
-        case infoLog:
-            l.file[infoLog].Write(data)
+            case fatalLog:
+                l.file[fatalLog].Write(data)
+            case errorLog:
+                l.file[errorLog].Write(data)
+            case warningLog:
+                l.file[warningLog].Write(data)
+            case infoLog:
+                l.file[infoLog].Write(data)
         }
     }
-    
+
     if s == fatalLog {
         // Make sure we see the trace for the current goroutine on standard error.
         if !l.toStderr {
