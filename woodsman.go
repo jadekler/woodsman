@@ -20,9 +20,11 @@
 // As a result, flag.Parse must be called before any logging is done.
 //
 //  -logtostderr=false
-//      Logs are written to standard error instead of to files.
-//  -alsologtostderr=false
-//      Logs are written to standard error as well as to files.
+//      Logs are written to standard error.
+//  -logtofile=false
+//      Logs are written to file.
+//  -logsyslog=false
+//      Logs are written to syslog.
 //  -stderrthreshold=ERROR
 //      Log events at or above this severity are logged to standard
 //      error as well as to files.
