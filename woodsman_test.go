@@ -81,6 +81,7 @@ func contains(s severity, str string, t *testing.T) bool {
 // setFlags configures the logging flags how the test expects them.
 func setFlags() {
     logging.toStderr = false
+    logging.toSyslog = false
     logging.toFile = true
 }
 
@@ -126,13 +127,6 @@ func TestError(t *testing.T) {
     if !contains(errorLog, "test", t) {
         t.Error("Error failed")
     }
-    str := contents(errorLog)
-    if !contains(warningLog, str, t) {
-        t.Error("Warning failed")
-    }
-    if !contains(infoLog, str, t) {
-        t.Error("Info failed")
-    }
 }
 
 // Test that a Warning log goes to Info.
@@ -147,10 +141,6 @@ func TestWarning(t *testing.T) {
     }
     if !contains(warningLog, "test", t) {
         t.Error("Warning failed")
-    }
-    str := contents(warningLog)
-    if !contains(infoLog, str, t) {
-        t.Error("Info failed")
     }
 }
 
