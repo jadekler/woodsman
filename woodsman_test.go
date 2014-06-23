@@ -85,16 +85,22 @@ func setFlags() {
     logging.toFile = true
 }
 
-// Test that Info works as advertised.
-func TestInfo(t *testing.T) {
-    setFlags()
-    defer logging.swap(logging.newBuffers())
-    Info("test")
-    if !contains(infoLog, "I", t) {
-        t.Errorf("Info has wrong character: %q", contents(infoLog))
+// If toFile is false and logDir is set, we should get a true bool to alert user log_dir is being ignored
+func TestFlagSetLogicWarnings(t *testing.T) {
+    if getLogDirWarning(true, "") {
+        t.Errorf("getLogDirWarning logic is incorrect - got %v, expected %v", getLogDirWarning(true, ""), false)
     }
-    if !contains(infoLog, "test", t) {
-        t.Error("Info failed")
+
+    if getLogDirWarning(false, "") {
+        t.Errorf("getLogDirWarning logic is incorrect - got %v, expected %v", getLogDirWarning(false, ""), false)
+    }
+
+    if getLogDirWarning(true, "/some/directory") {
+        t.Errorf("getLogDirWarning logic is incorrect - got %v, expected %v", getLogDirWarning(true, "/some/directory"), false)
+    }
+
+    if !getLogDirWarning(false, "/some/directory") {
+        t.Errorf("getLogDirWarning logic is incorrect - got %v, expected %v", getLogDirWarning(false, "/some/directory"), true)
     }
 }
 
@@ -111,6 +117,19 @@ func TestHeader(t *testing.T) {
     n, err := fmt.Sscanf(contents(infoLog), "I0102 15:04:05.678901 %d woodsman_test.go:%d] test\n", &pid, &line)
     if n != 2 || err != nil {
         t.Errorf("log format error: %d elements, error %s:\n%s", n, err, contents(infoLog))
+    }
+}
+
+// Test that Info works as advertised.
+func TestInfo(t *testing.T) {
+    setFlags()
+    defer logging.swap(logging.newBuffers())
+    Info("test")
+    if !contains(infoLog, "I", t) {
+        t.Errorf("Info has wrong character: %q", contents(infoLog))
+    }
+    if !contains(infoLog, "test", t) {
+        t.Error("Info failed")
     }
 }
 

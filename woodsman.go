@@ -587,14 +587,14 @@ func (l *loggingT) output(s severity, buf *buffer) {
 
     if l.toSyslog {
         switch s {
-            case fatalLog:
-                syslog.Emerg(string(data))
-            case errorLog:
-                syslog.Err(string(data))
-            case warningLog:
-                syslog.Warning(string(data))
-            case infoLog:
-                syslog.Info(string(data))
+        case fatalLog:
+            syslog.Emerg(string(data))
+        case errorLog:
+            syslog.Err(string(data))
+        case warningLog:
+            syslog.Warning(string(data))
+        case infoLog:
+            syslog.Info(string(data))
         }
     }
 
@@ -612,14 +612,14 @@ func (l *loggingT) output(s severity, buf *buffer) {
         }
 
         switch s {
-            case fatalLog:
-                l.file[fatalLog].Write(data)
-            case errorLog:
-                l.file[errorLog].Write(data)
-            case warningLog:
-                l.file[warningLog].Write(data)
-            case infoLog:
-                l.file[infoLog].Write(data)
+        case fatalLog:
+            l.file[fatalLog].Write(data)
+        case errorLog:
+            l.file[errorLog].Write(data)
+        case warningLog:
+            l.file[warningLog].Write(data)
+        case infoLog:
+            l.file[infoLog].Write(data)
         }
     }
 

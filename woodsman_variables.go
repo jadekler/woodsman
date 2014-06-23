@@ -2,6 +2,7 @@ package woodsman
 
 import (
     "flag"
+    "fmt"
     "sync"
 )
 
@@ -12,9 +13,10 @@ type loggingT struct {
     // Boolean flags. Not handled atomically because the flag.Value interface
     // does not let us avoid the =true, and that shorthand is necessary for
     // compatibility.
-    toStderr    bool // The -logtostderr flag.
-    toFile      bool // The -logtofile flag.
-    toSyslog    bool // The -logtosyslog flag.
+    toStderr bool // The -logtostderr flag.
+    toFile   bool // The -logtofile flag.
+    toSyslog bool // The -logtosyslog flag.
+    logDir   string
 
     // Level flag. Handled atomically.
     stderrThreshold severity // The -stderrthreshold flag.
@@ -56,4 +58,14 @@ func initFlags() {
     flag.Var(&logging.stderrThreshold, "stderrthreshold", "logs at or above this threshold go to stderr")
     flag.Var(&logging.vmodule, "vmodule", "comma-separated list of pattern=N settings for file-filtered logging")
     flag.Var(&logging.traceLocation, "log_backtrace_at", "when logging hits line file:N, emit a stack trace")
+    flag.StringVar(&logging.logDir, "log_dir", "", "If non-empty, write log files in this directory")
+
+    if getLogDirWarning(logging.toFile, logging.logDir) {
+        fmt.Println("Warning: -log_dir is set, but -logtofile is not. -log_dir will be ignored.")
+    }
+}
+
+// Return true if logDir is set and toFile is false
+func getLogDirWarning(toFile bool, logDir string) bool {
+    return logDir != "" && !toFile
 }
