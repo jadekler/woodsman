@@ -60,6 +60,8 @@ func initFlags() {
     flag.Var(&logging.traceLocation, "log_backtrace_at", "when logging hits line file:N, emit a stack trace")
     flag.StringVar(&logging.logDir, "log_dir", "", "If non-empty, write log files in this directory")
 
+    flag.Parse()
+
     if getLogDirWarning(logging.toFile, logging.logDir) {
         fmt.Println("Warning: -log_dir is set, but -logtofile is not. -log_dir will be ignored.")
     }
