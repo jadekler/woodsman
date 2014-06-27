@@ -4,6 +4,7 @@ import (
     "flag"
     "fmt"
     "sync"
+    // "os"
 )
 
 var logging loggingT
@@ -50,15 +51,48 @@ type loggingT struct {
     verbosity Level      // V logging level, the value of the -v flag/
 }
 
+func initExternalVars() {
+    initEnv()
+    initFlags()
+
+    fmt.Printf("FINAL: %v\n",logging.toFile)
+
+    if getLogDirWarning(logging.toFile, logging.logDir) {
+        fmt.Println("Warning: -log_dir is set, but -logtofile is not. -log_dir will be ignored.")
+    }
+}
+
+func initEnv() {
+    // toStderr := os.Getenv("WOODSMAN_LOGTOSTDERR")
+    // toFile := os.Getenv("WOODSMAN_LOGTOFILE") == "TRUE"
+
+    // toSyslog := os.Getenv("WOODSMAN_LOGTOSYSLOG") == "TRUE"
+
+    logging.toFile = true
+    fmt.Printf("ENV: %v\n",logging.toFile)
+}
+
 func initFlags() {
-    flag.BoolVar(&logging.toStderr, "logtostderr", false, "log to standard error")
-    flag.BoolVar(&logging.toFile, "logtofile", false, "log to files")
-    flag.BoolVar(&logging.toSyslog, "logtosyslog", false, "log to syslog")
-    flag.Var(&logging.verbosity, "v", "log level for V logs")
-    flag.Var(&logging.stderrThreshold, "stderrthreshold", "logs at or above this threshold go to stderr")
-    flag.Var(&logging.vmodule, "vmodule", "comma-separated list of pattern=N settings for file-filtered logging")
-    flag.Var(&logging.traceLocation, "log_backtrace_at", "when logging hits line file:N, emit a stack trace")
+    // flag.StringVar(&logging.toStderr, "logtostderr", "unset", "log to standard error")
+    // flag.StringVar(&logging.toSyslog, "logtosyslog", "unset", "log to syslog")
+
+    // var toFile string
+    // flag.StringVar(&toFile, "logtofile", "unset", "log to files")
+
+    // if toFile == "" || toFile == "true" {
+    //     logging.toFile = true
+    // } else if toFile == "false" {
+    //     logging.toFile = false
+    // }
+
+
+
     flag.StringVar(&logging.logDir, "log_dir", "", "If non-empty, write log files in this directory")
+    
+    // flag.Var(&logging.verbosity, "v", "log level for V logs")
+    // flag.Var(&logging.stderrThreshold, "stderrthreshold", "logs at or above this threshold go to stderr")
+    // flag.Var(&logging.vmodule, "vmodule", "comma-separated list of pattern=N settings for file-filtered logging")
+    // flag.Var(&logging.traceLocation, "log_backtrace_at", "when logging hits line file:N, emit a stack trace")
 
     flag.Parse()
 

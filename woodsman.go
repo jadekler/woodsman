@@ -379,7 +379,7 @@ func Flush() {
 }
 
 func init() {
-    initFlags()
+    initExternalVars()
 
     // Default stderrThreshold is ERROR.
     logging.stderrThreshold = errorLog

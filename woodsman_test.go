@@ -1,19 +1,3 @@
-// Go support for leveled logs, analogous to https://code.google.com/p/google-woodsman/
-//
-// Copyright 2013 Google Inc. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package woodsman
 
 import (
@@ -24,6 +8,9 @@ import (
     "strings"
     "testing"
     "time"
+    "os"
+    "io/ioutil"
+    "syscall"
 )
 
 // Test that shortHostname works as advertised.
@@ -83,6 +70,31 @@ func setFlags() {
     logging.toStderr = false
     logging.toSyslog = false
     logging.toFile = true
+}
+
+func TestInitVariables(t *testing.T) {
+    logToFile := os.Getenv("WOODSMAN_LOGTOFILE")
+    os.Setenv("WOODSMAN_LOGTOFILE", "TRUE")
+    tmpdir := os.Getenv("TMPDIR")
+    os.Setenv("TMPDIR", "/tmp/woodsman")
+    syscall.Mkdir("/tmp/woodsman", 0777)
+
+    logMsg := "THIS SHOULD BE WRITTEN TO A FILE"
+
+    Info(logMsg)
+
+    // read whole the file
+    b, err := ioutil.ReadFile("/tmp/woodsman/main.test.INFO")
+    if err != nil {
+        t.Errorf("Expected no errors when opening log file - got %v", err)   
+    }
+
+    if !strings.Contains(string(b), logMsg) {
+        t.Errorf("Expected file to contain %v - got %v.\n", logMsg, string(b))
+    }
+
+    os.Setenv("WOODSMAN_LOGTOFILE", logToFile)
+    os.Setenv("TMPDIR", tmpdir)
 }
 
 // If toFile is false and logDir is set, we should get a true bool to alert user log_dir is being ignored
